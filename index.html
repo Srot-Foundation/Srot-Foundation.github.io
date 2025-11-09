@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SROT: Source of Regeneration, Opportunities, and Transformation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- Contact-specific layout styles -->
+    <link rel="stylesheet" href="styles/contact.css">
+</head>
+<body>
+    <header class="header" data-include="header"></header>
+
+    <main>
+        <!-- ===== Section: Home / Landing ===== -->
+        <section id="home" class="home-section" data-section="home">
+            <div class="hero-media" data-animate="fade-up">
+                <img src="src/assets/hero_400kb_1920_1080.jpg" alt="Community member walking through natural landscape">
+            </div>
+            <div class="hero-content" data-animate="fade-up" data-delay="0.15s">
+                <h1>SROT: Source of Regeneration, Opportunities, and Transformation</h1>
+                <p class="hero-subtitle">Restoring, nurturing, and empowering natural landscapes and communities.</p>
+                <div class="hero-actions" data-animate="fade-up" data-delay="0.25s">
+                    <a href="#reach-out" class="btn btn-brown btn-pill">Contact Us</a>
+                    <a href="#work" class="btn btn-olive btn-pill">Support Us</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== Section: About Us ===== -->
+        <section id="about" class="about-hero" data-section="about">
+            <div class="container about-hero-inner">
+                <div class="about-hero-panel" data-animate="slide-panel" aria-hidden="true"></div>
+                <div class="about-hero-copy">
+                    <h1 class="about-hero-title typewriter" data-typewriter data-typewriter-delay="700" data-typewriter-loop="true" data-typewriter-interval="2600">What is SROT?</h1>
+                    <p class="about-hero-description" data-animate="fade-up" data-delay="0.3s">
+                        In Hindi and Sanskrit, ‘<strong>Srot</strong>’ means ‘<strong>Source</strong>’.
+                        <br>
+                        For us, SROT is: <strong>Source</strong> of <strong>Regeneration</strong>, <strong>Opportunities</strong>, and <strong>Transformation</strong>.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ===== Section: Our Work ===== -->
+       
+        <!-- ===== Section: Team ===== -->
+        
+
+        <!-- ===== Section: Reach Out ===== -->
+        <section id="reach-out" class="contact-hero" data-section="reach-out">
+            <div class="container">
+                <h1 data-animate="fade-up">Our Invitation</h1>
+                <p data-animate="fade-up" data-delay="0.12s">If you care about where your shelter comes from, and who builds it, and how, step into SROT. If you believe that architecture can heal, that community is a design process, and that nature is not something we build on, but something we build with, walk with us. If you see the land not just as terrain, but as a teacher, a living system that shapes how we dwell, move, and grow, you are already part of our work.</p>
+            </div>
+        </section>
+
+        <section class="contact-form-section">
+            <div class="container">
+                <div class="contact-layout" data-animate="fade-up">
+                    <form id="contact-form" class="contact-card">
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label for="first-name">Name*</label>
+                                <input type="text" id="first-name" name="first-name" required placeholder="First Name">
+                            </div>
+                            <div class="form-field">
+                                <label for="last-name">Last Name*</label>
+                                <input type="text" id="last-name" name="last-name" required placeholder="Last Name">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label for="email">Email*</label>
+                            <input type="email" id="email" name="email" required placeholder="name@email.com">
+                        </div>
+                        <div class="form-field">
+                            <label for="phone">Phone Number*</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="+91 0000000000">
+                        </div>
+                        <div class="form-field">
+                            <label for="message">Your message...</label>
+                            <textarea id="message" name="message" rows="5" required placeholder="Let us know how we can help you."></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">Send message</button>
+                    </form>
+                    <div class="contact-details">
+                        <p>Questions, comments, suggestions or requests? Everyone is welcome here. You don't need an architecture background, curiosity is enough.</p>
+                        <div class="contact-info-list">
+                            <div class="contact-info-item">
+                                <span class="contact-info-label">Address</span>
+                                <address>H No 78, Phase 2, 5-1-417/8<br>Moula Ali Housing Board, Secunderabad (500040)</address>
+                            </div>
+                            <div class="contact-info-item">
+                                <span class="contact-info-label">Phone</span>
+                                <a href="tel:+917842159531">+91 7842159531</a>
+                            </div>
+                            <div class="contact-info-item">
+                                <span class="contact-info-label">Email</span>
+                                <a href="mailto:srot.foundation03@gmail.com">srot.foundation03@gmail.com</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer" data-include="footer"></footer>
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/contact.js" defer></script>
+</body>
+</html>
