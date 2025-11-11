@@ -215,6 +215,8 @@ const initRevealAnimations = () => {
         }
     };
 
+    const allowsRepeat = (target) => !target.hasAttribute('data-animate-once');
+
     if (!('IntersectionObserver' in window)) {
         animatedElements.forEach(element => {
             if (element.dataset.delay) {
@@ -237,6 +239,8 @@ const initRevealAnimations = () => {
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const { target } = entry;
+            const canRepeat = allowsRepeat(target);
+
             if (entry.isIntersecting) {
                 const pendingRemoval = removalTimers.get(target);
                 if (pendingRemoval) {
@@ -245,8 +249,12 @@ const initRevealAnimations = () => {
                 }
                 target.classList.add('is-visible');
                 activateFloat(target);
+
+                if (!canRepeat) {
+                    revealObserver.unobserve(target);
+                }
             } else {
-                if (removalTimers.has(target)) {
+                if (!canRepeat || removalTimers.has(target)) {
                     return;
                 }
                 if (entry.intersectionRatio > 0 || isStillVisibleInViewport(entry)) {
@@ -340,12 +348,114 @@ const initTypewriter = () => {
     typeTargets.forEach(target => observer.observe(target));
 };
 
+const initSourceRotators = () => {
+    const rotators = document.querySelectorAll('[data-source-rotator]');
+    if (!rotators.length) {
+        return;
+    }
+
+    rotators.forEach(rotator => {
+        const words = (rotator.dataset.words || '')
+            .split(',')
+            .map(word => word.trim())
+            .filter(Boolean);
+
+        if (!words.length) {
+            return;
+        }
+
+        const interval = Number(rotator.closest('[data-source-showcase]')?.dataset.interval) || Number(rotator.dataset.interval) || 1800;
+        const animationDuration = 550;
+        let index = 0;
+        let wordHeight = 0;
+
+        rotator.textContent = '';
+
+        const track = document.createElement('div');
+        track.className = 'source-showcase-rotator-track';
+        rotator.appendChild(track);
+
+        const createWordEl = (word, options = {}) => {
+            const span = document.createElement('span');
+            span.className = 'source-showcase-rotator-word';
+            span.textContent = word;
+            if (options.duplicate) {
+                span.setAttribute('aria-hidden', 'true');
+            }
+            return span;
+        };
+
+        words.forEach(word => track.appendChild(createWordEl(word)));
+        // Append a duplicate of the first word to enable a seamless loop.
+        track.appendChild(createWordEl(words[0], { duplicate: true }));
+
+        const calculateWordHeight = () => {
+            wordHeight = rotator.clientHeight || track.firstElementChild?.clientHeight || 0;
+            if (wordHeight === 0) {
+                wordHeight = parseFloat(getComputedStyle(rotator).lineHeight) || 0;
+            }
+        };
+
+        const setTransform = (disableAnimation = false) => {
+            if (disableAnimation) {
+                track.classList.remove('is-animating');
+            }
+            track.style.transform = `translateY(-${index * wordHeight}px)`;
+        };
+
+        calculateWordHeight();
+        setTransform(true);
+        rotator.setAttribute('data-active-word', words[index]);
+
+        if (words.length < 2) {
+            return;
+        }
+
+        window.addEventListener('resize', () => {
+            const previousHeight = wordHeight;
+            calculateWordHeight();
+            if (Math.abs(previousHeight - wordHeight) > 0.5) {
+                setTransform(true);
+            }
+        });
+
+        const rotate = () => {
+            if (!wordHeight) {
+                calculateWordHeight();
+            }
+
+            index += 1;
+            track.classList.add('is-animating');
+            setTransform();
+
+            const currentWordIndex = index === words.length ? 0 : index;
+            rotator.setAttribute('data-active-word', words[currentWordIndex]);
+
+            if (index === words.length) {
+                window.setTimeout(() => {
+                    track.classList.remove('is-animating');
+                    index = 0;
+                    setTransform(true);
+                }, animationDuration);
+                return;
+            }
+
+            window.setTimeout(() => {
+                track.classList.remove('is-animating');
+            }, animationDuration);
+        };
+
+        window.setInterval(rotate, interval);
+    });
+};
+
 const bootstrap = async () => {
     const { headerElement } = await loadLayout();
     initSmoothScroll();
     initHeaderScrollEffect(headerElement);
     initRevealAnimations();
     initTypewriter();
+    initSourceRotators();
 };
 
 bootstrap();
