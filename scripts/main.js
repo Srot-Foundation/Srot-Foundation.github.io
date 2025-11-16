@@ -449,6 +449,113 @@ const initSourceRotators = () => {
     });
 };
 
+const initCounters = () => {
+    const counters = document.querySelectorAll('[data-counter]');
+    if (!counters.length) {
+        return;
+    }
+
+    const formatValue = (value, decimals) => {
+        if (decimals > 0) {
+            return value.toFixed(decimals);
+        }
+        return Math.round(value).toString();
+    };
+
+    const animationFrames = new WeakMap();
+    const activeCounters = new WeakSet();
+
+    const cancelAnimation = (el) => {
+        const frameId = animationFrames.get(el);
+        if (frameId !== undefined) {
+            window.cancelAnimationFrame(frameId);
+            animationFrames.delete(el);
+        }
+    };
+
+    const resetCounter = (el) => {
+        cancelAnimation(el);
+        const startValue = Number(el.dataset.counterStart ?? 0);
+        const prefix = el.dataset.counterPrefix ?? '';
+        const suffix = el.dataset.counterSuffix ?? '';
+        const decimals = Number(el.dataset.counterDecimals ?? 0);
+        el.textContent = `${prefix}${formatValue(startValue, decimals)}${suffix}`;
+    };
+
+    const animateCounter = (el) => {
+        cancelAnimation(el);
+        const startValue = Number(el.dataset.counterStart ?? 0);
+        const targetValue = Number(el.dataset.counterTarget ?? startValue);
+        const duration = Number(el.dataset.counterDuration ?? 1600);
+        const prefix = el.dataset.counterPrefix ?? '';
+        const suffix = el.dataset.counterSuffix ?? '';
+        const decimals = Number(el.dataset.counterDecimals ?? 0);
+        const staticValue = el.dataset.counterStatic;
+        const range = targetValue - startValue;
+
+        const applyValue = (value) => {
+            el.textContent = `${prefix}${formatValue(value, decimals)}${suffix}`;
+        };
+
+        if (Math.abs(range) < Number.EPSILON) {
+            if (staticValue) {
+                el.textContent = staticValue;
+            } else {
+                applyValue(targetValue);
+            }
+            return;
+        }
+
+        let startTimestamp;
+        const step = (timestamp) => {
+            if (startTimestamp === undefined) {
+                startTimestamp = timestamp;
+            }
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const value = startValue + range * progress;
+            applyValue(value);
+
+            if (progress < 1) {
+                const frameId = window.requestAnimationFrame(step);
+                animationFrames.set(el, frameId);
+            } else {
+                animationFrames.delete(el);
+                if (staticValue) {
+                    el.textContent = staticValue;
+                }
+            }
+        };
+
+        const frameId = window.requestAnimationFrame(step);
+        animationFrames.set(el, frameId);
+    };
+
+    counters.forEach(counter => resetCounter(counter));
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            const { target } = entry;
+            if (entry.isIntersecting) {
+                if (activeCounters.has(target)) {
+                    return;
+                }
+                activeCounters.add(target);
+                animateCounter(target);
+                return;
+            }
+
+            if (entry.intersectionRatio === 0) {
+                activeCounters.delete(target);
+                resetCounter(target);
+            }
+        });
+    }, {
+        threshold: 0.4
+    });
+
+    counters.forEach(counter => observer.observe(counter));
+};
+
 const bootstrap = async () => {
     const { headerElement } = await loadLayout();
     initSmoothScroll();
@@ -456,6 +563,7 @@ const bootstrap = async () => {
     initRevealAnimations();
     initTypewriter();
     initSourceRotators();
+    initCounters();
 };
 
 bootstrap();
