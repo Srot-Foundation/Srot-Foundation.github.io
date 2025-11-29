@@ -556,6 +556,69 @@ const initCounters = () => {
     counters.forEach(counter => observer.observe(counter));
 };
 
+const initEngagementTabs = () => {
+    const tabs = Array.from(document.querySelectorAll('[data-engagement-tab]'));
+    const panels = Array.from(document.querySelectorAll('[data-engagement-panel]'));
+
+    if (!tabs.length || !panels.length) {
+        return;
+    }
+
+    const panelMap = new Map();
+    panels.forEach(panel => {
+        const id = panel.dataset.engagementPanel;
+        if (id) {
+            panelMap.set(id, panel);
+        }
+    });
+
+    const activate = (id) => {
+        if (!panelMap.has(id)) {
+            return;
+        }
+
+        tabs.forEach(tab => {
+            const isActive = tab.dataset.engagementTab === id;
+            tab.classList.toggle('is-active', isActive);
+            tab.setAttribute('aria-selected', String(isActive));
+            tab.tabIndex = isActive ? 0 : -1;
+        });
+
+        panels.forEach(panel => {
+            panel.classList.toggle('is-active', panel.dataset.engagementPanel === id);
+        });
+    };
+
+    tabs.forEach((tab, index) => {
+        tab.tabIndex = tab.classList.contains('is-active') ? 0 : -1;
+
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.engagementTab;
+            if (target) {
+                activate(target);
+            }
+        });
+
+        tab.addEventListener('keydown', (event) => {
+            if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+                return;
+            }
+
+            event.preventDefault();
+            const direction = event.key === 'ArrowRight' ? 1 : -1;
+            const nextIndex = (index + direction + tabs.length) % tabs.length;
+            const nextTab = tabs[nextIndex];
+            if (nextTab) {
+                nextTab.focus();
+                const target = nextTab.dataset.engagementTab;
+                if (target) {
+                    activate(target);
+                }
+            }
+        });
+    });
+};
+
 const bootstrap = async () => {
     const { headerElement } = await loadLayout();
     initSmoothScroll();
@@ -564,6 +627,7 @@ const bootstrap = async () => {
     initTypewriter();
     initSourceRotators();
     initCounters();
+    initEngagementTabs();
 };
 
 bootstrap();
